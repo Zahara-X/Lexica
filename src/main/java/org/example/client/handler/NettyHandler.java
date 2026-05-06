@@ -3,35 +3,67 @@ package org.example.client.handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.example.data.GameData;
+import org.example.data.PlayerDew;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NettyHandler extends SimpleChannelInboundHandler<ByteBuf> {
-    private static ByteBuf buffer;
     private static Logger logger = LoggerFactory.getLogger(NettyHandler.class);
+    private final GameData gameData = new GameData();
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
          int id = msg.readInt();
          if(id == 12) {
-             int width = msg.readInt();
-             int height = msg.readInt();
-             int[][] newGrid = new int[height][width];
-             for(int i = 0; i < newGrid.length; i++) {
-                 for(int j = 0; j < newGrid[i].length; j++) {
-                     newGrid[i][j] = msg.readInt();
-                 }
-             }
-         }
-         if(id == 4) {
              if(msg.isReadable()) {
-                 int cameraX = msg.readInt();
-                 logger.info("camera: {}", cameraX);
+                 int w = msg.readInt();
+                 int h = msg.readInt();
+                 int[][] newGrid = new int[w][h];
+                 for (int i = 0; i < w; i++) {
+                     for (int j = 0; j < h; j++) {
+                         newGrid[i][j] = msg.readInt();
+                     }
+                 }
+                GameData.grid = newGrid;
              }
-
          }
-         if(id == 5) {
-             int playerSpawn = msg.readInt();
-             logger.info("playerSpawn: {}", playerSpawn);
+         if(id == 8) {
+             int hashId = msg.readInt();
+             int cameraX = msg.readInt();
+             logger.info("hashX: {}", hashId);
+             if(GameData.hashMyId == hashId) {
+                 gameData.cameraX = cameraX;
+             } else {
+                 PlayerDew data = gameData.getInstance().get(hashId);
+                 if(data != null) data.x = cameraX;
+             }
+                 logger.info("cameraX: {}", cameraX);
+         }
+         if(id == 9) {
+             int hashId = msg.readInt();
+             int cameraY = msg.readInt();
+             logger.info("hashY: {}", hashId);
+             if(GameData.hashMyId == hashId) {
+                 gameData.cameraY = cameraY;
+             } else {
+                 PlayerDew data = gameData.getInstance().get(hashId);
+                 if(data != null) data.y = cameraY;
+
+             }
+             logger.info("cameraY: {}", cameraY);
+         }
+         if(id == 15) {
+             int playerZ = msg.readInt();
+             int cameraY = msg.readInt();
+             int cameraX = msg.readInt();
+             int hashId = msg.readInt();
+             if(GameData.id == -1) {
+                 GameData.playerZ = playerZ;
+                 gameData.cameraX = cameraX;
+                 gameData.cameraY = cameraY;
+                 GameData.hashMyId = hashId;
+                 logger.info("x: {}, y: {}, hash: {}, playerZ: {}", cameraX,  cameraY, hashId, playerZ);
+             }
          }
     }
 }
