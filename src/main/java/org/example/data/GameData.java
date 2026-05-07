@@ -4,14 +4,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GameData {
-    public final Map<Integer, PlayerDew> instance = new ConcurrentHashMap<>();
+    public Map<Integer, PlayerDew> instance = new ConcurrentHashMap<>();
     public volatile int id = -1;
-    public volatile int hashMyId;
-    public volatile static int[][] grid;
-    public volatile static int sizeMap;
+    public volatile int playerZ;
     public volatile int cameraX;
     public volatile int cameraY;
-    public volatile int playerZ;
+    public volatile int MyId;
+    public volatile static int[][] grid;
+    public volatile static int sizeMap;
 
     public int getId() {
         return id;
@@ -34,5 +34,7 @@ public class GameData {
     }
 
     public GameData() {}
+
+
 
 }

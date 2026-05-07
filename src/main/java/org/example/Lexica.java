@@ -3,15 +3,13 @@ import org.example.client.NettyClient;
 import org.example.client.handler.KeyboardHandler;
 import org.example.data.GameData;
 import org.example.data.PlayerDew;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 public class Lexica extends JPanel {
-    private static final Logger logger = LoggerFactory.getLogger(Lexica.class);
     private static final KeyboardHandler keyboard = new KeyboardHandler();
     private static final GameData gameDate = new GameData();
     private static final String TITLE = "Lexica";
@@ -36,6 +34,7 @@ public class Lexica extends JPanel {
         if(keys[KeyEvent.VK_D]) keyboard.keyboard((byte)9);
         this.repaint();
     }).start();
+
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -45,23 +44,36 @@ public class Lexica extends JPanel {
             g2.drawString("Загрузка...", 20,20);
             return;
         }
+        int[][] gridLayout =  GameData.grid; // (Snapshot) copy map
         int size = GameData.sizeMap;
-        entity[0] = GameData.grid.length * size;
-        entity[1] = GameData.grid[0].length * size;
+        if(gridLayout == null || gridLayout.length == 0 || gridLayout[0].length == 0) return;
+        entity[0] = gridLayout.length * size;
+        entity[1] = gridLayout[0].length * size;
         entity[2] = (this.getWidth() - entity[0]) / 0x2;
         entity[3] = (this.getHeight() - entity[1]) / 0x2;
         g2.setColor(Color.WHITE);
-        for (int i = 0; i < GameData.grid.length; i++) {
-            for (int j = 0; j < GameData.grid[i].length; j++) {
+        for (int i = 0; i < gridLayout.length; i++) {
+            int[] row = gridLayout[i];
+            for (int j = 0; j < row.length; j++) {
                 entity[4] = (i * size) + entity[2] - gameDate.getCameraX();
                 entity[5] = (j * size) + entity[3] - gameDate.getCameraY();
                 g2.drawRect(entity[4], entity[5], size, size);
             }
         }
+        // Monitor camera
+        g2.setColor(Color.GREEN);
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.drawString("cameraX: " + gameDate.getCameraX(), 10, 20);
+        g2.drawString("cameraY: " + gameDate.getCameraY(), 10, 40);
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.drawString("online", 1920, 20);
+
+
         int player = gameDate.getPlayerZ();
         entity[6] = (this.getWidth() - player) / 0x2;
         entity[7] = (this.getHeight() - player) / 0x2;
         for(PlayerDew data : gameDate.getInstance().values()) {
+            if(data == null) continue;
             g2.setColor(Color.RED);
             entity[8] = (data.x - gameDate.getCameraX()) + entity[6];
             entity[9] = (data.y - gameDate.getCameraY()) + entity[7];
