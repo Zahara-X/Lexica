@@ -5,12 +5,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GameData {
     public final Map<Integer, PlayerDew> instance = new ConcurrentHashMap<>();
-    public volatile static int id = -1;
-    public volatile static int hashMyId;
+    public volatile int id = -1;
+    public volatile int hashMyId;
     public volatile static int[][] grid;
+    public volatile static int sizeMap;
     public volatile int cameraX;
     public volatile int cameraY;
-    public volatile static int playerZ;
+    public volatile int playerZ;
+
+    public int getId() {
+        return id;
+    }
 
     public int getCameraX() {
         return cameraX;
@@ -20,8 +25,14 @@ public class GameData {
         return cameraY;
     }
 
+    public int getPlayerZ() {
+        return playerZ;
+    }
+
     public Map<Integer, PlayerDew> getInstance() {
         return instance;
     }
+
+    public GameData() {}
 
 }

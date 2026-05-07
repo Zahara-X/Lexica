@@ -13,7 +13,7 @@ import java.awt.event.KeyEvent;
 public class Lexica extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(Lexica.class);
     private static final KeyboardHandler keyboard = new KeyboardHandler();
-    private final GameData gameData = new GameData();
+    private static final GameData gameDate = new GameData();
     private static final String TITLE = "Lexica";
     private static final int[] entity = new int[10];
     private static final boolean[] keys = new boolean[256];
@@ -34,10 +34,8 @@ public class Lexica extends JPanel {
         if(keys[KeyEvent.VK_S]) keyboard.keyboard((byte)5);
         if(keys[KeyEvent.VK_A]) keyboard.keyboard((byte)7);
         if(keys[KeyEvent.VK_D]) keyboard.keyboard((byte)9);
-//        logger.info("camera: {}", GameData.cameraX);
         this.repaint();
     }).start();
-        gameData.getInstance().put(GameData.hashMyId, new PlayerDew(gameData.getCameraX(), gameData.getCameraY()));
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -47,7 +45,7 @@ public class Lexica extends JPanel {
             g2.drawString("Загрузка...", 20,20);
             return;
         }
-        int size = 150;
+        int size = GameData.sizeMap;
         entity[0] = GameData.grid.length * size;
         entity[1] = GameData.grid[0].length * size;
         entity[2] = (this.getWidth() - entity[0]) / 0x2;
@@ -55,17 +53,18 @@ public class Lexica extends JPanel {
         g2.setColor(Color.WHITE);
         for (int i = 0; i < GameData.grid.length; i++) {
             for (int j = 0; j < GameData.grid[i].length; j++) {
-                entity[4] = (i * size) + entity[2] - gameData.getCameraX();
-                entity[5] = (j * size) + entity[3] - gameData.getCameraY();
+                entity[4] = (i * size) + entity[2] - gameDate.getCameraX();
+                entity[5] = (j * size) + entity[3] - gameDate.getCameraY();
                 g2.drawRect(entity[4], entity[5], size, size);
             }
         }
-        int player = GameData.playerZ;
+        int player = gameDate.getPlayerZ();
         entity[6] = (this.getWidth() - player) / 0x2;
         entity[7] = (this.getHeight() - player) / 0x2;
-        for(PlayerDew data : gameData.getInstance().values()) {
-            entity[8] = (data.x - GameData.cameraX) + entity[6];
-            entity[9] = (data.y - GameData.cameraY) + entity[7];
+        for(PlayerDew data : gameDate.getInstance().values()) {
+            g2.setColor(Color.RED);
+            entity[8] = (data.x - gameDate.getCameraX()) + entity[6];
+            entity[9] = (data.y - gameDate.getCameraY()) + entity[7];
             g2.fillOval(entity[8], entity[9], player, player);
         }
         g2.setColor(Color.WHITE);
@@ -78,7 +77,7 @@ public class Lexica extends JPanel {
        window.setLocationRelativeTo(null);
        window.add(new Lexica());
        window.setVisible(true);
-       new NettyClient("localhost", 8080);
+       new NettyClient("localhost", 8080, keyboard, gameDate);
 
     }
 }

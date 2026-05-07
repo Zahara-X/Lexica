@@ -4,11 +4,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
 public class KeyboardHandler {
-    private static Channel channel;
+    private Channel channel;
     private ByteBuf buffer;
     // делаем инициализацию
-    public static void setChannel(Channel ch) {
-        channel = ch; // присваиваем к текущему (channel)
+    public void setChannel(Channel ch) {
+        this.channel = ch; // присваиваем к текущему (channel)
     }
     // Метод, отправителя, тип клавиатура, ну тут и так понятно что это keyboard :-)
     public void keyboard(byte key) {

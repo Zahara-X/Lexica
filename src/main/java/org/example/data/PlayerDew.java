@@ -5,4 +5,5 @@ public class PlayerDew {
         this.x = x;
         this.y = y;
     }
+    public PlayerDew() {}
 }
